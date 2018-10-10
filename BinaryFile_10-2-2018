@@ -1,0 +1,105 @@
+/*CS112				October 9, 2018
+ *Chapter 10		Project 11
+ *Programmer: Kevin Yu
+ *October 9, 2018
+ *Program Title: BinaryFile
+ *Description:	This program creates a .dat file, and writes a bunch of doubles into the file.
+ *Then the program will read the .dat file and output the standard deviation to the screen.
+ *Purpose: The pupose of the program is to read a bunch of doubles from a .dat file and finding
+ *out what the mean and standard deviation is.
+ *Algorithm: 
+ *			1. Creates an array of double that contains from 1~10.
+ *			2. Use ObjectOutputStream and FileOutputStream to output the doubles into an numbers.dat.
+ *				a. Use a for loop to output the doubles one at a time to the numbers.dat file.
+ *				b. close the file using the .close(0 method.
+ *			3. Use ObjectInputStream and FileInputStream to read the numbers.dat.
+ *			4. 
+ *			2. write a method that accepts an array, and find out the standard deviation.
+ *			9. Writes a method that reads a double array and returns the average.
+ *				a. Use a while loop that allows 
+ */
+import java.util.*;
+import java.io.*;
+import java.lang.*;
+public class BinaryFiles
+{
+	public static void main(String[] args)
+	{
+		double[] doubleArray = new double[0];
+		try
+		{
+			double[] array = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0};
+			ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream("numbers.dat"));
+			for(int i = 0; i<array.length;i++)
+			{
+				outputStream.writeDouble(array[i]);
+			}
+			outputStream.close();
+			ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream("numbers.dat"));
+			try
+			{
+				while(true)
+				{
+					double tempDouble = inputStream.readDouble();
+					System.out.println(tempDouble);
+					double[] temp = new double[doubleArray.length];
+					for(int i = 0;i<doubleArray.length;i++)
+					{
+						temp[i] = doubleArray[i];	
+					}
+					doubleArray = new double[temp.length + 1];
+					for(int i = 0;i<temp.length;i++)
+					{
+						if(temp.length>0)
+						{
+							doubleArray[i] = temp[i];
+						}
+					}
+					doubleArray[temp.length] = tempDouble;
+				}
+			}
+			catch(EOFException e)
+			{
+				System.out.println("No more doubles.");
+			}
+			
+		}
+		catch(FileNotFoundException e)
+		{
+			System.out.println("Cannot find file.");
+		}
+		catch(IOException e)
+		{
+			System.out.println("Problem with file output");
+		}
+		
+		System.out.println("The average of these doubles are: "+getAverage(doubleArray) + "\nThe standard deviation of these doubles are: " + getStandardDeviation(getAverage(doubleArray), doubleArray));
+	}
+	public static double getAverage(double[] Array1)
+	{
+		double average = 0.0;
+		double total = 0.0;
+		int i = 0;
+		while(i<Array1.length)
+		{
+			total += Array1[i];
+			i++;
+		}
+		average = total / Array1.length;
+		return average;
+	}
+	public static double getStandardDeviation(double aver, double[] Array1)
+	{
+		double SD = 0.0;
+		double[] Array2 = new double[Array1.length];
+		int i = 0;
+		while(i<Array1.length)
+		{
+			Array2[i] = Math.pow((Array1[i] - aver), 2);
+			i++;
+		}
+		double mean = getAverage(Array2);
+		SD = Math.pow(mean, 0.5);
+		return SD;
+	}
+}
